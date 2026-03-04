@@ -17,6 +17,7 @@ def _write_event(event: str, meta: dict):
     except Exception:
         pass  # never break main request
 
-
 def track(event: str, meta: dict):
+    if executor._work_queue.qsize() > 1000:
+        return
     executor.submit(_write_event, event, meta)

@@ -35,6 +35,10 @@ async def upload_ad_image(
         raise HTTPException(400, "Image too large (max 5MB)")
 
     filename = safe_filename(file.filename, "png")
+
+    if not file.filename.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+        raise HTTPException(400, "Unsupported image format")
+    
     file_path = os.path.join(ADS_UPLOAD_DIR, filename)
 
     with open(file_path, "wb") as buffer:

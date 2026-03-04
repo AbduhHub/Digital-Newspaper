@@ -22,14 +22,13 @@ ads = db["ads"]
 def init_indexes():
     analytics = db["analytics"]
 
-    for name, info in analytics.index_information().items():
-        if info["key"] == [("timestamp", 1)]:
-            if info.get("expireAfterSeconds") != 60 * 60 * 24 * 90:
-                analytics.drop_index(name)
-
-    analytics.create_index(
-        "timestamp",
-        expireAfterSeconds=60 * 60 * 24 * 90
-    )
-
+    analytics.create_index("timestamp", expireAfterSeconds=60 * 60 * 24 * 90)
     analytics.create_index("event")
+
+    epapers.create_index("date", unique=True)
+
+    articles.create_index("slug", unique=True)
+    articles.create_index("created_at")
+
+    ads.create_index([("placement", 1), ("active", 1), ("priority", 1)])
+    ads.create_index("image")

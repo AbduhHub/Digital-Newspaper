@@ -24,29 +24,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.services.limiter import limiter
 
 
-
-class LimitUploadSizeMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app, max_upload_size: int):
-        super().__init__(app)
-        self.max_upload_size = max_upload_size
-
-    async def dispatch(self, request, call_next):
-        if request.method == "POST":
-            content_length = request.headers.get("content-length")
-            if content_length and int(content_length) > self.max_upload_size:
-                from fastapi.responses import PlainTextResponse
-                return PlainTextResponse(
-                    "Request body too large",
-                    status_code=413
-                )
-        return await call_next(request)
-    
-
 app = FastAPI()
-app.add_middleware(
-    LimitUploadSizeMiddleware,
-    max_upload_size=25 * 1024 * 1024  # 25MB hard cap
-)
+
 app.state.limiter = limiter
 
 app.add_middleware(SlowAPIMiddleware)
@@ -95,6 +74,12 @@ app.include_router(upload.router)
 @app.on_event("startup")
 def startup():
     init_indexes()
+
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 @app.exception_handler(Exception)

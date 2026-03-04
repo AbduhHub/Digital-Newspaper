@@ -9,20 +9,19 @@ from auth import require_admin
 from app.audit import log_action
 from app.analytics import track
 from system_logger import logger
+from app.services.limiter import limiter
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
 
 @router.post("/", dependencies=[Depends(require_admin)])
+@limiter.limit("10/minute")
 def create_article(data: ArticleCreate):
 
     base_slug = generate_slug(data.title)
     slug = base_slug
     counter = 1
 
-    while articles.find_one({"slug": slug}):
-        slug = f"{base_slug}-{counter}"
-        counter += 1
 
     doc = {
         **data.dict(),
@@ -30,7 +29,10 @@ def create_article(data: ArticleCreate):
         "created_at": datetime.utcnow()
     }
 
-    articles.insert_one(doc)
+    try:
+        articles.insert_one(doc)
+    except DuplicateKeyError:
+        raise HTTPException(409, "Slug collision")
 
     log_action("article_created", {
         "slug": slug,
@@ -45,6 +47,7 @@ def create_article(data: ArticleCreate):
 
 
 @router.get("/")
+@limiter.limit("10/minute")
 def list_articles(
     request: Request,
     response: Response,
@@ -55,7 +58,7 @@ def list_articles(
     skip = (page - 1) * limit
 
     docs = list(
-        articles.find({}, {"_id": 0})
+        articles.find({}, {"_id": 0, "content": 0})
         .sort("created_at", -1)
         .skip(skip)
         .limit(limit)
@@ -72,6 +75,7 @@ def list_articles(
 
 
 @router.get("/{slug}")
+@limiter.limit("10/minute")
 def get_article(slug: str, request: Request):
     article = articles.find_one({"slug": slug}, {"_id": 0})
 
@@ -87,6 +91,7 @@ def get_article(slug: str, request: Request):
 
 
 @router.delete("/{slug}", dependencies=[Depends(require_admin)])
+@limiter.limit("10/minute")
 def delete_article(slug: str):
 
     result = articles.delete_one({"slug": slug})

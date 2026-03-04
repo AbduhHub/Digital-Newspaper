@@ -11,6 +11,9 @@ from utils.files import ensure_dir
 from app.config import UPLOAD_DIR
 from app.audit import log_action
 from app.services.limiter import limiter
+import shutil
+from app.config import UPLOAD_DIR
+
 
 router = APIRouter(prefix="/epapers", tags=["epapers"])
 
@@ -18,12 +21,14 @@ BASE_UPLOAD = os.path.join(UPLOAD_DIR, "epapers")
 
 ensure_dir(BASE_UPLOAD)
 
-executor = ThreadPoolExecutor(max_workers=2)
+max_workers = min(4, os.cpu_count())
+executor = ThreadPoolExecutor(max_workers=max_workers)
 
 
 
 
 @router.get("/")
+@limiter.limit("10/minute")
 def list_epapers(
     response: Response,
     page: int = Query(1, ge=1),
@@ -44,6 +49,7 @@ def list_epapers(
 
 
 @router.get("/{date}")
+@limiter.limit("10/minute")
 def get_epaper(date: str):
     doc = epapers.find_one({"date": date}, {"_id": 0})
     if not doc:
@@ -103,6 +109,7 @@ def upload_epaper(
 
 
 @router.delete("/{date}", dependencies=[Depends(require_admin)])
+@limiter.limit("10/minute")
 def delete_epaper(date: str):
 
     result = epapers.delete_one({"date": date})
@@ -110,9 +117,9 @@ def delete_epaper(date: str):
     if result.deleted_count == 0:
         raise HTTPException(404, "Epaper not found")
 
-    # Also delete folder
-    import shutil
-    from app.config import UPLOAD_DIR
+    if ".." in date:
+        raise HTTPException(400, "Invalid date")
+        
 
     folder = os.path.join(UPLOAD_DIR, "epapers", date)
     if os.path.exists(folder):
