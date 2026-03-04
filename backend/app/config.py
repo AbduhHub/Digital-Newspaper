@@ -8,6 +8,7 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI environment variable is required")

@@ -2,17 +2,12 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 from jose import jwt, JWTError
-from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from fastapi import HTTPException, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer
 from datetime import datetime, timedelta, timezone
-from jose import jwt
 from fastapi import HTTPException, status, Depends
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError
 from app.config import SECRET_KEY
-
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -29,6 +24,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
+# SECRET_KEY = os.getenv("SECRET_KEY")
 
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY environment variable is required")

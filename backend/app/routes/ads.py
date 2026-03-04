@@ -108,7 +108,7 @@ def list_all_ads(request: Request, response: Response):
 
 @router.post("/", dependencies=[Depends(require_admin)])
 @limiter.limit("10/minute")
-def create_ad(data: CreateAdRequest):
+def create_ad(data: CreateAdRequest, request: Request):
 
     # Prevent duplicates
     if ads.find_one({"image": data.image}):
@@ -129,7 +129,7 @@ def create_ad(data: CreateAdRequest):
 
 @router.put("/{filename}", dependencies=[Depends(require_admin)])
 @limiter.limit("10/minute")
-def toggle_ad(filename: str):
+def toggle_ad(filename: str, request: Request):
 
     result = find_by_filename(filename)
 
@@ -150,7 +150,7 @@ def toggle_ad(filename: str):
 
 @router.put("/{filename}/priority", dependencies=[Depends(require_admin)])
 @limiter.limit("10/minute")
-def update_priority(filename: str, data: UpdatePriorityRequest):
+def update_priority(filename: str, request: Request, data: UpdatePriorityRequest):
 
     result = find_by_filename(filename)
 
@@ -169,7 +169,7 @@ def update_priority(filename: str, data: UpdatePriorityRequest):
 
 @router.delete("/{filename}", dependencies=[Depends(require_admin)])
 @limiter.limit("10/minute")
-def delete_ad(filename: str):
+def delete_ad(filename: str, request: Request):
 
     result = find_by_filename(filename)
 

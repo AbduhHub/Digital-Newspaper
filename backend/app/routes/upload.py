@@ -34,7 +34,8 @@ async def upload_ad_image(
     if size > MAX_IMAGE_SIZE:
         raise HTTPException(400, "Image too large (max 5MB)")
 
-    filename = safe_filename(file.filename, "png")
+    ext = file.filename.split(".")[-1].lower()
+    filename = safe_filename(file.filename, ext)
 
     if not file.filename.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
         raise HTTPException(400, "Unsupported image format")
@@ -80,7 +81,8 @@ async def upload_article_image(
     ARTICLE_UPLOAD_DIR = os.path.join(UPLOAD_DIR, "articles")
     ensure_dir(ARTICLE_UPLOAD_DIR)
 
-    filename = safe_filename(file.filename, "png")
+    ext = file.filename.split(".")[-1].lower()
+    filename = safe_filename(file.filename, ext)
     file_path = os.path.join(ARTICLE_UPLOAD_DIR, filename)
 
     with open(file_path, "wb") as buffer:

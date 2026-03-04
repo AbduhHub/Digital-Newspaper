@@ -22,13 +22,14 @@ from slowapi.middleware import SlowAPIMiddleware
 from fastapi.responses import PlainTextResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.services.limiter import limiter
+from fastapi.middleware.gzip import GZipMiddleware
 
 
 app = FastAPI()
 
 app.state.limiter = limiter
 
-app.add_middleware(SlowAPIMiddleware)
+
 
 
 MAX_REQUEST_SIZE = 25 * 1024 * 1024  # 25MB hard cap
@@ -38,17 +39,23 @@ class LimitUploadSizeMiddleware(BaseHTTPMiddleware):
         content_length = request.headers.get("content-length")
 
         if content_length:
-            if int(content_length) > MAX_REQUEST_SIZE:
-                return JSONResponse(
-                    status_code=413,
-                    content={"detail": "Request too large"},
-                )
+            try:
+                if int(content_length) > MAX_REQUEST_SIZE:
+                    return JSONResponse(
+                        status_code=413,
+                        content={"detail": "Request too large"},
+                    )
+            except ValueError:
+                pass
 
         return await call_next(request)
 
 app.add_middleware(LimitUploadSizeMiddleware)
 
+app.add_middleware(SlowAPIMiddleware)
+
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -56,6 +63,11 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1000
 )
 
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")

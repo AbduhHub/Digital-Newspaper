@@ -14,7 +14,7 @@ export default function ArticleCard({ article }: any) {
 
       <div className="article-card-body">
         <h3>{article.title}</h3>
-        <p>{article.content.slice(0, 120)}...</p>
+        <p>{article.excerpt}</p>
         <span className="read-more">مزید پڑھیں →</span>
       </div>
     </Link>
