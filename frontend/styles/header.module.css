@@ -1,0 +1,108 @@
+.header {
+  background: #fff;
+}
+
+/* ================= TOP STRIP ================= */
+
+.topStrip {
+  background: #1e3a8a;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.stripContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 20px;
+  position: relative;
+}
+
+.leftStrip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.centerStrip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.rightStrip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.weather {
+  opacity: 0.9;
+}
+
+.iconLink {
+  color: #fff;
+  opacity: 0.85;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* ================= MASTHEAD ================= */
+
+.masthead {
+  text-align: center;
+  padding: 2px 0;
+}
+
+.mastheadImage {
+  max-width: 1000px;
+  width: 100%;
+  height: 210px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .mastheadImage {
+    height: auto;
+    overflow: hidden;
+  }
+  /* header div[style*="position: absolute"] {
+    display: none;
+  }
+
+  header span {
+    font-size: 11px;
+  } */
+}
+
+/* ================= NAVBAR ================= */
+
+.navBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 8px 0;
+}
+
+.navLink {
+  font-size: 16px;
+  color: #111;
+  transition: all 0.18s ease;
+  font-weight: 600;
+}
+
+.navLink:hover {
+  color: #1e3a8a;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.divider {
+  width: 1px;
+  height: 16px;
+  background: #ccc;
+}

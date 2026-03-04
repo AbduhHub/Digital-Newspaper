@@ -1,0 +1,386 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap");
+
+.nastaliq {
+  font-family: "Noto Nastaliq Urdu", serif;
+  background: #f6f6f6;
+  color: #111;
+}
+
+:root {
+  --font-display: 34px;
+  --font-h1: 28px;
+  --font-h2: 22px;
+  --font-body: 18px;
+  --font-small: 14px;
+
+  --spacing-xl: 50px;
+  --spacing-lg: 32px;
+  --spacing-md: 20px;
+  --spacing-sm: 16px;
+
+  --color-primary: #1e3a8a;
+  --color-accent: #a61b1b;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+
+  color: #111;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+/* HERO HOVER */
+a:hover {
+  text-decoration: none;
+}
+
+section a:hover {
+  transform: translateY(-3px);
+}
+
+section a {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+section a:hover img {
+  transform: scale(1.03);
+}
+
+section img {
+  transition: transform 0.35s ease;
+}
+
+/* ===== BREAKING STRIP ===== */
+
+.breaking-wrapper {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-top: 2px solid #a61b1b; /* softer red */
+  border-bottom: 2px solid #a61b1b;
+  height: 58px;
+  overflow: hidden;
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Soft glow on hover */
+.breaking-wrapper:hover {
+  /* box-shadow: 0 0 18px rgba(166, 27, 27, 0.18); */
+  border-top-color: #7f1414;
+  border-bottom-color: #7f1414;
+}
+
+/* Pause animation on hover */
+.breaking-wrapper:hover .breaking-track {
+  animation-play-state: paused;
+}
+
+/* Label */
+.breaking-label {
+  background: #a61b1b;
+  color: #fff;
+  padding: 0 18px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.3s ease;
+}
+
+/* Slight darken on hover */
+.breaking-wrapper:hover .breaking-label {
+  background: #7f1414;
+}
+
+/* Highlight ONLY hovered headline */
+.breaking-item:hover {
+  opacity: 1 !important;
+  color: #a61b1b;
+  /* font-weight: 600; */
+  text-shadow: 0 0 8px rgba(166, 27, 27, 0.35);
+  transition: all 0.25s ease;
+  transform: scale(1.03);
+}
+
+/* Viewport */
+.breaking-viewport {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Continuous sliding animation */
+.breaking-track {
+  display: flex;
+  width: max-content;
+  animation: tickerSlide 30s linear infinite;
+}
+
+.breaking-item {
+  padding: 0 60px;
+  white-space: nowrap;
+  font-size: 19px;
+  font-weight: 550;
+  color: #a61b1b;
+  transition:
+    opacity 0.25s ease,
+    color 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+/* Dim all headlines slightly on hover */
+.breaking-wrapper:hover .breaking-item {
+  opacity: 0.5;
+}
+
+/* Keyframe */
+@keyframes tickerSlide {
+  0% {
+    transform: translateX(-0);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.breaking-divider {
+  margin: 0 200px;
+  color: #a61b1b;
+  font-size: 14px;
+  opacity: 0;
+}
+
+.ad-slot {
+  margin: 30px 0;
+  text-align: center;
+
+  border: 1px solid #eee;
+  padding: 10px;
+  background: #fafafa;
+}
+
+.ad-image {
+  width: 100%;
+  /* max-width: 320px; */
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.article-body {
+  /* line-height: 2.1; */
+
+  font-size: var(--font-body);
+  margin-bottom: 22px;
+}
+
+.article-card {
+  display: block;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease;
+}
+
+.article-card:hover {
+  transform: translateY(-6px);
+  color: #162c6a;
+  text-decoration: underline;
+}
+
+.article-card-img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.article-card-body {
+  padding: 18px;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--color-primary);
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+
+.read-more:hover {
+  /* color: #a61b1b; */
+  font-size: large;
+}
+
+.article-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+}
+
+.article-main {
+  min-width: 0;
+}
+
+.article-sidebar {
+  width: 100%;
+}
+
+@media (max-width: 1000px) {
+  .article-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .article-sidebar {
+    order: -1;
+  }
+}
+.article-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 6px; /* sharper newspaper feel */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+}
+
+.article-title {
+  font-size: var(--font-display);
+  /* margin-bottom: 25px; */
+  /* line-height: 1.5; */
+}
+
+.article-image {
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.related-section {
+  margin-top: 80px;
+}
+
+.related-section h2 {
+  font-size: var(--font-h1);
+  margin-bottom: 30px;
+  border-bottom: 2px solid #111;
+  padding-bottom: 6px;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.primary-btn {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 12px 28px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.admin-wrapper {
+  padding: 40px;
+  max-width: 1400px;
+  margin: auto;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.admin-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.stat-card p {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.admin-grid {
+  display: grid;
+  gap: 40px;
+}
+
+.article-title {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.article-body {
+  font-weight: 500;
+  text-align: justify;
+}
+
+.related-section h2,
+.sectionTitle {
+  font-weight: 700;
+}
+
+input,
+textarea,
+select {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #162c6a;
+}
+
+section {
+  background: #fff;
+  padding: 25px;
+  border-radius: 6px;
+  margin-bottom: 40px;
+}
