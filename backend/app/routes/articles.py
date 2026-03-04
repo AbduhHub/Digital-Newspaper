@@ -10,22 +10,26 @@ from app.audit import log_action
 from app.analytics import track
 from system_logger import logger
 from app.services.limiter import limiter
+from app.cache import get_cache, set_cache
 
 router = APIRouter(prefix="/articles", tags=["articles"])
 
 
 @router.post("/", dependencies=[Depends(require_admin)])
 @limiter.limit("10/minute")
-def create_article(data: ArticleCreate):
+def create_article(
+    request: Request,
+    data: ArticleCreate
+):
 
     base_slug = generate_slug(data.title)
     slug = base_slug
     counter = 1
 
-
     doc = {
         **data.dict(),
         "slug": slug,
+        "excerpt": data.content[:140],
         "created_at": datetime.utcnow()
     }
 
@@ -33,6 +37,11 @@ def create_article(data: ArticleCreate):
         articles.insert_one(doc)
     except DuplicateKeyError:
         raise HTTPException(409, "Slug collision")
+
+    # clear article caches
+    from app.redis_client import redis_client
+    for key in redis_client.scan_iter("articles:*"):
+        redis_client.delete(key)
 
     log_action("article_created", {
         "slug": slug,
@@ -57,6 +66,13 @@ def list_articles(
     base_url = str(request.base_url).rstrip("/")
     skip = (page - 1) * limit
 
+
+    cache_key = f"articles:{page}:{limit}"
+
+    cached = get_cache(cache_key)
+    if cached is not None:
+        return cached
+
     docs = list(
         articles.find({}, {"_id": 0, "content": 0})
         .sort("created_at", -1)
@@ -68,7 +84,8 @@ def list_articles(
         if doc.get("image") and not doc["image"].startswith("http"):
             doc["image"] = f"{base_url}{doc['image']}"
 
-    # Add light caching
+    set_cache(cache_key, docs, 60)
+
     response.headers["Cache-Control"] = "public, max-age=60"
 
     return docs
@@ -92,12 +109,16 @@ def get_article(slug: str, request: Request):
 
 @router.delete("/{slug}", dependencies=[Depends(require_admin)])
 @limiter.limit("10/minute")
-def delete_article(slug: str):
+def delete_article(slug: str, request: Request):
 
     result = articles.delete_one({"slug": slug})
 
     if result.deleted_count == 0:
         raise HTTPException(404, "Article not found")
+
+    from app.redis_client import redis_client
+    for key in redis_client.scan_iter("articles:*"):
+        redis_client.delete(key)
 
     log_action("article_deleted", {"slug": slug})
 
