@@ -30,5 +30,5 @@ def init_indexes():
     articles.create_index("slug", unique=True)
     articles.create_index("created_at")
 
-    ads.create_index([("placement", 1), ("active", 1), ("priority", 1)])
-    ads.create_index("image")
+    ads.create_index("placement")
+    ads.create_index("active")
