@@ -1,0 +1,43 @@
+services:
+  backend:
+    build: ./backend
+    container_name: newspaper_backend
+    restart: always
+    volumes:
+      - ./backend/uploads:/app/uploads
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+      - mongodb
+
+  redis:
+    image: redis:7-alpine
+    container_name: newspaper_redis
+    restart: always
+
+  mongodb:
+    image: mongo:7
+    container_name: newspaper_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  nginx:
+    image: nginx:latest
+    container_name: newspaper_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:

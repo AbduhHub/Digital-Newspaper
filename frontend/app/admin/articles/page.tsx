@@ -1,12 +1,12 @@
-// "use client";
+"use client";
 
-// import ManageArticles from "components/admin/ManageArticles";
+import ManageArticles from "components/admin/ManageArticles";
 
-// export default function ArticlesPage() {
-//   return (
-//     <>
-//       <h1>Manage Articles</h1>
-//       <ManageArticles />
-//     </>
-//   );
-// }
+export default function ArticlesPage() {
+  return (
+    <>
+      <h1>Manage Articles</h1>
+      <ManageArticles />
+    </>
+  );
+}

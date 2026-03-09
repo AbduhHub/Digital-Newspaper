@@ -26,6 +26,7 @@ def init_indexes():
     analytics.create_index("event")
 
     epapers.create_index("date", unique=True)
+    epapers.create_index([("date", -1)])
 
     articles.create_index("slug", unique=True)
     articles.create_index("created_at")

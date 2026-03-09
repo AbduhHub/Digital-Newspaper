@@ -23,9 +23,11 @@ from fastapi.responses import PlainTextResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.services.limiter import limiter
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import ORJSONResponse
 
 
-app = FastAPI()
+
+app = FastAPI(default_response_class=ORJSONResponse)
 
 app.state.limiter = limiter
 
@@ -70,17 +72,18 @@ app.add_middleware(
     minimum_size=1000
 )
 
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
-# app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+if os.getenv("ENV") != "production":
+    app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="epapers")
 
 
 app.include_router(auth_routes.router)
+# app.include_router(auth_routes.router, prefix="/api")
 app.include_router(epaper.router)
 app.include_router(articles.router)
 app.include_router(ads.router)
 app.include_router(analytics_routes.router)
 app.include_router(stats.router)
-app.include_router(upload.router)
+app.include_router(upload.router)   
 
 
 @app.on_event("startup")

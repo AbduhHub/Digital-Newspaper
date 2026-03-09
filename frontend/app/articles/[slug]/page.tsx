@@ -9,7 +9,7 @@ async function getArticle(slug: string) {
 
   try {
     const res = await fetch(`${API}/articles/${slug}`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) return null;

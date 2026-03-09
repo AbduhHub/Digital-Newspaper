@@ -3,12 +3,12 @@ from datetime import datetime
 from pymongo.errors import DuplicateKeyError
 
 from app.db import articles
-from models import ArticleCreate
+from app.models import ArticleCreate
 from utils.slug import generate_slug
-from auth import require_admin
+from app.auth import require_admin
 from app.audit import log_action
 from app.analytics import track
-from system_logger import logger
+from utils.system_logger import logger
 from app.services.limiter import limiter
 from app.cache import get_cache, set_cache
 
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/articles", tags=["articles"])
 
 
 @router.post("/", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def create_article(
     request: Request,
     data: ArticleCreate
@@ -25,6 +25,10 @@ def create_article(
     base_slug = generate_slug(data.title)
     slug = base_slug
     counter = 1
+
+    while articles.find_one({"slug": slug}):
+        slug = f"{base_slug}-{counter}"
+        counter += 1
 
     doc = {
         **data.dict(),
@@ -40,7 +44,7 @@ def create_article(
 
     # clear article caches
     from app.redis_client import redis_client
-    for key in redis_client.scan_iter("articles:*"):
+    for key in redis_client.scan_iter(match="articles:*", count=100):
         redis_client.delete(key)
 
     log_action("article_created", {
@@ -56,14 +60,15 @@ def create_article(
 
 
 @router.get("/")
-@limiter.limit("10/minute")
+@limiter.limit("60/minute")
 def list_articles(
     request: Request,
     response: Response,
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=50)
 ):
-    base_url = str(request.base_url).rstrip("/")
+    from app.config import BASE_URL
+    base_url = BASE_URL
     skip = (page - 1) * limit
 
 
@@ -92,7 +97,7 @@ def list_articles(
 
 
 @router.get("/{slug}")
-@limiter.limit("10/minute")
+@limiter.limit("60/minute")
 def get_article(slug: str, request: Request):
     article = articles.find_one({"slug": slug}, {"_id": 0})
 
@@ -100,7 +105,8 @@ def get_article(slug: str, request: Request):
         raise HTTPException(404, "Article not found")
 
     if article.get("image") and not article["image"].startswith("http"):
-        base_url = str(request.base_url).rstrip("/")
+        from app.config import BASE_URL
+        base_url = BASE_URL
         article["image"] = f"{base_url}{article['image']}"
 
     track("article_view", {"slug": slug})
@@ -108,7 +114,7 @@ def get_article(slug: str, request: Request):
 
 
 @router.delete("/{slug}", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def delete_article(slug: str, request: Request):
 
     result = articles.delete_one({"slug": slug})
@@ -117,7 +123,7 @@ def delete_article(slug: str, request: Request):
         raise HTTPException(404, "Article not found")
 
     from app.redis_client import redis_client
-    for key in redis_client.scan_iter("articles:*"):
+    for key in redis_client.scan_iter(match="articles:*", count=100):
         redis_client.delete(key)
 
     log_action("article_deleted", {"slug": slug})

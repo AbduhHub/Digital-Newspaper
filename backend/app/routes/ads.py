@@ -5,8 +5,8 @@ from datetime import datetime
 import re
 
 from app.db import ads
-from auth import require_admin
-from models import AdPlacement
+from app.auth import require_admin
+from app.models import AdPlacement
 from app.services.limiter import limiter
 
 router = APIRouter(prefix="/ads", tags=["ads"])
@@ -46,14 +46,15 @@ def find_by_filename(filename: str):
 # PUBLIC — Get ads by placement
 
 @router.get("/{placement}")
-@limiter.limit("10/minute")
+@limiter.limit("60/minute")
 def get_ads(
     placement: AdPlacement,
     request: Request,
     response: Response
 ) -> List[dict]:
 
-    base_url = str(request.base_url).rstrip("/")
+    from app.config import BASE_URL
+    base_url = BASE_URL
 
     docs = list(
         ads.find(
@@ -83,10 +84,11 @@ def get_ads(
 # ADMIN — List all ads
 
 @router.get("/", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("60/minute")
 def list_all_ads(request: Request, response: Response):
 
-    base_url = str(request.base_url).rstrip("/")
+    from app.config import BASE_URL
+    base_url = BASE_URL
 
     docs = list(
         ads.find({}, {"_id": 0})
@@ -107,7 +109,7 @@ def list_all_ads(request: Request, response: Response):
 # ADMIN — Create ad
 
 @router.post("/", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def create_ad(data: CreateAdRequest, request: Request):
 
     # Prevent duplicates
@@ -128,7 +130,7 @@ def create_ad(data: CreateAdRequest, request: Request):
 # ADMIN — Toggle active
 
 @router.put("/{filename}", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def toggle_ad(filename: str, request: Request):
 
     result = find_by_filename(filename)
@@ -149,7 +151,7 @@ def toggle_ad(filename: str, request: Request):
 # ADMIN — Update priority
 
 @router.put("/{filename}/priority", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def update_priority(filename: str, request: Request, data: UpdatePriorityRequest):
 
     result = find_by_filename(filename)
@@ -168,7 +170,7 @@ def update_priority(filename: str, request: Request, data: UpdatePriorityRequest
 # ADMIN — Delete ad
 
 @router.delete("/{filename}", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def delete_ad(filename: str, request: Request):
 
     result = find_by_filename(filename)

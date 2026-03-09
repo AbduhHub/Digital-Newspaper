@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
-from models import LoginRequest
-from auth import authenticate_user, create_access_token, require_admin
+from app.models import LoginRequest
+from app.auth import authenticate_user, create_access_token, require_admin
 from app.services.limiter import limiter
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -12,7 +12,7 @@ def validate_admin(user=Depends(require_admin)):
 
 
 @router.post("/login")
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def login(data: LoginRequest, request: Request):
     if not authenticate_user(data.username, data.password):
         raise HTTPException(401, "Invalid credentials")

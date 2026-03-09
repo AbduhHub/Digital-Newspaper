@@ -2,9 +2,10 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Form, Q
 from datetime import datetime
 import os
 import shutil
+import re
 from concurrent.futures import ThreadPoolExecutor
 
-from auth import require_admin
+from app.auth import require_admin
 from app.db import epapers
 from app.tasks.pdf_tasks import process_pdf
 from utils.files import ensure_dir
@@ -27,7 +28,7 @@ executor = ThreadPoolExecutor(max_workers=max_workers)
 
 
 @router.get("/")
-@limiter.limit("10/minute")
+@limiter.limit("60/minute")
 def list_epapers(
     request: Request,
     response: Response,
@@ -49,7 +50,7 @@ def list_epapers(
                 "_id": 0,
                 "date": 1,
                 "cover_image": 1,
-                "pdf": 1
+                # "pdf": 1
             }
         )
         .sort("date", -1)
@@ -65,7 +66,7 @@ def list_epapers(
 
 
 @router.get("/{date}")
-@limiter.limit("10/minute")
+@limiter.limit("60/minute")
 def get_epaper(
     request: Request,
     date: str
@@ -140,14 +141,14 @@ def upload_epaper(
 
 
     from app.redis_client import redis_client
-    for key in redis_client.scan_iter("epapers:*"):
+    for key in redis_client.scan_iter(match="epapers:*", count=100):
         redis_client.delete(key)
 
     return {"message": "Upload queued", "date": date}
 
 
 @router.delete("/{date}", dependencies=[Depends(require_admin)])
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 def delete_epaper(
     request: Request,
     date: str
@@ -158,7 +159,7 @@ def delete_epaper(
     if result.deleted_count == 0:
         raise HTTPException(404, "Epaper not found")
 
-    if ".." in date:
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", date):
         raise HTTPException(400, "Invalid date")
         
 
@@ -169,7 +170,7 @@ def delete_epaper(
     log_action("epaper_deleted", {"date": date})
 
     from app.redis_client import redis_client
-    for key in redis_client.scan_iter("epapers:*"):
+    for key in redis_client.scan_iter(match="epapers:*", count=100):
         redis_client.delete(key)
         
     return {"status": "deleted"}

@@ -1,7 +1,13 @@
 fastapi
 uvicorn
+gunicorn
 pymongo
+redis
 python-dotenv
-python-slugify
-pydantic
+passlib[bcrypt]==1.7.4
+bcrypt==3.2.2
+python-jose[cryptography]
 slowapi
+pillow
+python-multipart
+orjson

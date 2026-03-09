@@ -87,3 +87,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+system.log
+# backend/uploads
+
+.vscode
+
+# uploads
+uploads/
+backend/uploads/

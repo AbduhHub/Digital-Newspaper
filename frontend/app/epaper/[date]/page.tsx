@@ -4,7 +4,7 @@ const API = process.env.NEXT_PUBLIC_API;
 
 async function getData(date: string) {
   const res = await fetch(`${API}/epapers/${date}`, {
-    cache: "no-store",
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) return null;
@@ -21,7 +21,7 @@ export default async function EpaperPage({
 
   const data = await getData(date);
 
-  if (!data || !data.images) {
+  if (!data || !data.images || data.images.length === 0) {
     return <div style={{ padding: 20 }}>اخبار دستیاب نہیں</div>;
   }
 

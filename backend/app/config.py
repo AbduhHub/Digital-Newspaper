@@ -4,11 +4,12 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-UPLOAD_DIR = BASE_DIR / "uploads"
+UPLOAD_DIR = Path("/app/uploads")
 
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME")
 SECRET_KEY = os.getenv("SECRET_KEY")
+BASE_URL = os.getenv("BASE_URL", "http://localhost")
 
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI environment variable is required")

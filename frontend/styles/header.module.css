@@ -2,7 +2,7 @@
   background: #fff;
 }
 
-/* ================= TOP STRIP ================= */
+/*  TOP STRIP  */
 
 .topStrip {
   background: #1e3a8a;
@@ -50,7 +50,7 @@
   text-decoration: none;
 }
 
-/* ================= MASTHEAD ================= */
+/*  MASTHEAD  */
 
 .masthead {
   text-align: center;
@@ -78,7 +78,7 @@
   } */
 }
 
-/* ================= NAVBAR ================= */
+/*  NAVBAR  */
 
 .navBar {
   display: flex;

@@ -67,7 +67,7 @@ section img {
   transition: transform 0.35s ease;
 }
 
-/* ===== BREAKING STRIP ===== */
+/* BREAKING STRIP */
 
 .breaking-wrapper {
   display: flex;

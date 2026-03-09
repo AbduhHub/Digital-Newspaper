@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Request
+from fastapi import APIRouter, UploadFile, File, HTTPException, Request, Depends
 import os
 import shutil
 from PIL import Image
@@ -7,6 +7,7 @@ from utils.images import optimize_image
 from utils.files import safe_filename, ensure_dir
 from app.services.limiter import limiter
 from app.config import UPLOAD_DIR
+from app.auth import require_admin
 
 
 router = APIRouter()
@@ -15,8 +16,8 @@ ADS_UPLOAD_DIR = os.path.join(UPLOAD_DIR, "ads")
 ensure_dir(ADS_UPLOAD_DIR)
 
 
-@router.post("/upload/ad-image")
-@limiter.limit("10/minute")
+@router.post("/upload/ad-image", dependencies=[Depends(require_admin)])
+@limiter.limit("5/minute")
 async def upload_ad_image(
     request:Request,
     file: UploadFile = File(...)
@@ -59,8 +60,8 @@ async def upload_ad_image(
 
 
 
-@router.post("/upload/article-image")
-@limiter.limit("10/minute")
+@router.post("/upload/article-image", dependencies=[Depends(require_admin)])
+@limiter.limit("5/minute")
 async def upload_article_image(
     request: Request,
     file: UploadFile = File(...)

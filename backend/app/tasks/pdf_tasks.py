@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app.db import epapers
 from app.audit import log_action
-from system_logger import logger
+from utils.system_logger import logger
 from app.services.pdf_processor import pdf_to_images
 from app.config import UPLOAD_DIR
 from app.config import ALLOWED_ORIGINS
@@ -19,7 +19,8 @@ def process_pdf(path: str, date: str):
 
         
 
-        BACKEND_URL = ALLOWED_ORIGINS[0].replace("3000", "8000")
+        from app.config import BASE_URL
+        BACKEND_URL = BASE_URL
 
         web_images = []
         for img in images:

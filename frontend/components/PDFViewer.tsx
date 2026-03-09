@@ -24,7 +24,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const RENDER_SCALE = isMobileDevice ? 4 : 5;
+  const RENDER_SCALE = isMobileDevice ? 2 : 2.2;
   const MIN_ZOOM = 0.6;
   const MAX_ZOOM = isMobileDevice ? 3.5 : 5;
 
@@ -142,7 +142,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     return () => window.removeEventListener("resize", handleResize);
   }, [numPages]);
 
-  /* ------------------- BLOCK BROWSER ZOOM INSIDE VIEWER ------------------- */
+  /*BLOCK BROWSER ZOOM INSIDE VIEWER*/
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -157,7 +157,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     return () => stage.removeEventListener("wheel", onWheel);
   }, []);
 
-  /* ------------------- LOAD SIDEBAR ADS ------------------- */
+  /*  LOAD SIDEBAR ADS  */
 
   useEffect(() => {
     async function loadAds() {
@@ -180,7 +180,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
 
     loadBetweenAds();
   }, []);
-  /* ------------------- PDF LOAD ------------------- */
+  /*  PDF LOAD  */
 
   useEffect(() => {
     if (!pdfUrl || !adsReady) return;
@@ -264,7 +264,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     };
   }, [pdfUrl, adsReady]);
 
-  /* ------------------- PAGE RENDERING ------------------- */
+  /*  PAGE RENDERING  */
 
   async function renderPage(pageNumber: number) {
     const doc = pdfDocRef.current;
@@ -391,7 +391,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     }
   }
 
-  /* ------------------- FIT WIDTH ------------------- */
+  /*  FIT WIDTH  */
 
   function applyFitWidth() {
     const stage = stageRef.current;
@@ -441,7 +441,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     return () => document.removeEventListener("fullscreenchange", onFsChange);
   }, [isMobile]);
 
-  /* ------------------- ACTIVE PAGE TRACKING ------------------- */
+  /*  ACTIVE PAGE TRACKING  */
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -492,7 +492,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     activePageRef.current = activePage;
   }, [activePage]);
 
-  /* ------------------- NAVIGATION ------------------- */
+  /*  NAVIGATION  */
 
   function goToPage(page: number) {
     const safe = Math.max(1, Math.min(numPages || 1, page));
@@ -519,7 +519,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     goToPage(activePage - 1);
   }
 
-  /* ------------------- KEYBOARD ------------------- */
+  /*  KEYBOARD  */
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -543,7 +543,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     return () => window.removeEventListener("keydown", handler);
   }, [activePage, numPages, readingMode]);
 
-  /* ------------------- ZOOM AROUND POINT ------------------- */
+  /*  ZOOM AROUND POINT  */
 
   function applyLayoutZoom(newZoom: number) {
     const z = clamp(newZoom, MIN_ZOOM, MAX_ZOOM);
@@ -574,7 +574,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     }
   }
 
-  /* ------------------- DRAG PAN ------------------- */
+  /*  DRAG PAN  */
 
   function onPointerDown(e: React.PointerEvent) {
     const stage = stageRef.current;
@@ -617,7 +617,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     } catch {}
   }
 
-  /* ------------------- TOUCH PINCH ------------------- */
+  /*  TOUCH PINCH  */
 
   function distance(t1: React.Touch, t2: React.Touch) {
     const dx = t1.clientX - t2.clientX;
@@ -661,7 +661,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     if (e.touches.length < 2) pinchRef.current.active = false;
   }
 
-  /* ------------------- DOUBLE TAP ------------------- */
+  /*  DOUBLE TAP  */
 
   const lastTapRef = useRef(0);
 
@@ -689,7 +689,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     }
   }
 
-  /* ------------------- READING MODE ------------------- */
+  /*  READING MODE  */
 
   async function enterReadingMode() {
     setReadingMode(true);
@@ -722,7 +722,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
     } catch {}
   }
 
-  /* ------------------- UI SHOW/HIDE (MOBILE TOP ZONE) ------------------- */
+  /*  UI SHOW/HIDE (MOBILE TOP ZONE)  */
 
   function onMobileTopZoneTap() {
     if (!isMobile) return;
@@ -1149,7 +1149,7 @@ export default function PDFViewer({ pdfUrl, thumbnailPages = [] }: Props) {
   );
 }
 
-/* ---------------- HELPERS + STYLES ---------------- */
+/*  HELPERS + STYLES  */
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
