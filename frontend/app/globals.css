@@ -384,3 +384,8 @@ section {
   border-radius: 6px;
   margin-bottom: 40px;
 }
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}

@@ -25,5 +25,5 @@ export default async function EpaperPage({
     return <div style={{ padding: 20 }}>اخبار دستیاب نہیں</div>;
   }
 
-  return <PDFViewer pdfUrl={data.pdf} thumbnailPages={data.images} />;
+  return <PDFViewer pages={data.images} thumbnailPages={data.images} />;
 }
